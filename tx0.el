@@ -3,12 +3,18 @@
 ;; Copyright (C) 2020, All rights reserved.
 
 ;; Author: Matt D <mdoza@me.com>
-;; Version: 0.1
+;; Version: 0.1.0
 ;; Keywords: url, web
 ;; URL: http://github.com/mdoza/tx0
 
 (require 'url)
 (require 'dom)
+
+(defgroup tx0 nil
+  "Generate short urls with SDF's Tx0 url service."
+  :version "0.1.0"
+  :link '(url-link "https://github.com/mdoza/tx0")
+  :group 'convenience)
 
 (defun tx0 (s)
   "Create a short url with tx0.org."
