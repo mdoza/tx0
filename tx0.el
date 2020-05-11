@@ -7,10 +7,12 @@
 ;; Keywords: url, web
 ;; URL: http://github.com/mdoza/tx0
 
+(require 'url)
+(require 'dom)
+
 (defun tx0 (s)
   "Create a short url with tx0.org."
   (interactive "sURL: ")
-  (require 'dom)
   (let* ((this-buffer (current-buffer))
          (escaped-url (url-hexify-string s))
          (url-request-method "POST")
