@@ -32,3 +32,5 @@
         (switch-to-buffer this-buffer)
         (kill-new shorturl)
         (insert shorturl)))))
+
+(require 'tx0)
