@@ -33,4 +33,4 @@
         (kill-new shorturl)
         (insert shorturl)))))
 
-(require 'tx0)
+(provide 'tx0)
