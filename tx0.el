@@ -1,36 +1,66 @@
-;;; tx0.el --- Generate short urls with SDF's Tx0 service.
+;;; tx0.el --- Short urls with tx0.org               -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2020, All rights reserved.
+;; Copyright (C) 2020  azod
 
-;; Author: Matt D <mdoza@me.com>
-;; Version: 0.1.0
-;; Keywords: url, web
-;; URL: http://github.com/mdoza/tx0
+;; Author: azod <azod@sdf.org>
+;; Keywords: lisp, comm
 
-(require 'url)
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This program shortnes a URL by using the tx0.org url service.
+
+;;; Code:
+
 (require 'dom)
 
-(defgroup tx0 nil
-  "Generate short urls with SDF's Tx0 url service."
-  :version "0.1.0"
-  :link '(url-link "https://github.com/mdoza/tx0")
-  :group 'convenience)
+(defvar tx0-short-url nil
+  "Where the short url is stored.")
 
-(defun tx0 (s)
-  "Create a short url with tx0.org."
-  (interactive "sURL: ")
-  (let* ((this-buffer (current-buffer))
-         (escaped-url (url-hexify-string s))
-         (url-request-method "POST")
-         (url-request-data (concat "?=" escaped-url))
-         (url-request-extra-headers
-          '(("Content-Type" . "application/x-www-form-urlencoded"))))
+(defun tx0 ()
+  "Create a short url with tx0.org"
+  (interactive)
+  (let ((url (url-get-url-at-point)))
+    (if (= (length url) 0)
+	(tx0/with-minibuffer-input)
+      (tx0/create-short-url url))))
+
+(defun tx0-insert-short-url ()
+  "Inserts the short url at where the cursor is located."
+  (interactive)
+  (insert tx0-short-url))
+
+(defun tx0/with-minibuffer-input ()
+  "Create a short url using user input."
+  (let ((url (read-from-minibuffer "URL: ")))
+    (tx0/create-short-url url)))
+
+(defun tx0/create-short-url (url)
+  "Connect to tx0.org and create the url."
+  (let* ((escaped-url (url-hexify-string url))
+	 (url-request-method "POST")
+	 (url-request-data (concat "?=" escaped-url))
+	 (url-request-extra-headers
+	  '(("Content-Type" . "application/x-www-form-urlencoded"))))
     (with-temp-buffer
       (url-insert-file-contents "https://tx0.org")
       (let* ((dom (libxml-parse-html-region (point-min) (point-max)))
-             (shorturl (nth 10 (dom-strings dom))))
-        (switch-to-buffer this-buffer)
-        (kill-new shorturl)
-        (insert shorturl)))))
-
+	     (shorturl (nth 10 (dom-strings dom))))
+	(setq tx0-short-url shorturl)
+	(message (concat "Short tx0 url created: " tx0-short-url))
+	(kill-new shorturl)))))
+  
 (provide 'tx0)
+;;; tx0.el ends here
