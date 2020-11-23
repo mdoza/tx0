@@ -3,6 +3,7 @@
 ;; Copyright (C) 2020  azod
 
 ;; Author: azod <azod@sdf.org>
+;; Version: 1.0
 ;; Keywords: lisp, comm
 
 ;; This program is free software; you can redistribute it and/or modify
